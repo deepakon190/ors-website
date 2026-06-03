@@ -178,6 +178,8 @@ function initNavScroll() {
 
 /* ── INIT ALL ── */
 document.addEventListener('DOMContentLoaded', () => {
+  // Mark body as JS-loaded so CSS animations activate
+  document.body.classList.add('js-loaded');
   initReveal();
   initShopMonkey();
   initBookingForm();
