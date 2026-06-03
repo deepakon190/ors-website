@@ -316,8 +316,12 @@ footer { background: #040d18; padding: 48px 5% 28px; }
 .call-cta-chat a { color: var(--orange); font-weight: 700; }
 
 /* ═══ SCROLL REVEAL ═══ */
-.reveal { opacity: 0; transform: translateY(32px); transition: opacity .7s ease, transform .7s ease; }
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .5s ease, transform .5s ease; }
 .reveal.vis { opacity: 1; transform: translateY(0); }
+/* Fallback: show content if JS hasn't fired after 1s */
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; }
+}
 
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 1024px) {
