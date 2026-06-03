@@ -316,12 +316,10 @@ footer { background: #040d18; padding: 48px 5% 28px; }
 .call-cta-chat a { color: var(--orange); font-weight: 700; }
 
 /* ═══ SCROLL REVEAL ═══ */
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity .5s ease, transform .5s ease; }
-.reveal.vis { opacity: 1; transform: translateY(0); }
-/* Fallback: show content if JS hasn't fired after 1s */
-@media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; }
-}
+/* Visible by default - JS enhances with animation */
+.reveal { opacity: 1; transform: translateY(0); transition: opacity .5s ease, transform .5s ease; }
+.js-loaded .reveal { opacity: 0; transform: translateY(24px); }
+.js-loaded .reveal.vis { opacity: 1; transform: translateY(0); }
 
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 1024px) {
