@@ -93,10 +93,19 @@ function toggleMenu() {
 
 /* ── SCROLL REVEAL ── */
 function initReveal() {
+  // Use threshold 0 so elements visible on load trigger immediately
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
-  }, { threshold: 0.1 });
+  }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Also reveal anything already in view on page load
+  setTimeout(() => {
+    document.querySelectorAll('.reveal').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) el.classList.add('vis');
+    });
+  }, 100);
 }
 
 /* ── SHOPMONKEY LOADER ── */
