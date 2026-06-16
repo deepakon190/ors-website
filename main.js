@@ -1,188 +1,349 @@
 /* ═══════════════════════════════════════════
    ON ROUTE SERVICES — main.js
-   ORS Mobile Car & Truck Repair · Millville NJ
 ═══════════════════════════════════════════ */
-
 'use strict';
 
-/* ── CHAT STATE ── */
-let chatOpen = false;
-
-const CHAT_REPLIES = {
-  book:      "Great! Head to our <a href='#booking' style='color:var(--orange)'>Book Online section</a> to schedule — or call us at <a href='tel:8564842795' style='color:var(--orange)'>(856) 484-2795</a> for same-day slots.",
-  brake:     "Brake issues are a safety priority! We replace brake pads and inspect rotors at your location. Call <a href='tel:8564842795' style='color:var(--orange)'>(856) 484-2795</a> or <a href='#booking' style='color:var(--orange)'>book online</a>.",
-  oil:       "Oil leaks can be tricky — we handle them on-site: valve covers, pan gaskets, and more. <a href='#booking' style='color:var(--orange)'>Book a diagnosis</a> or call <a href='tel:8564842795' style='color:var(--orange)'>(856) 484-2795</a>.",
-  tire:      "Flat tires and replacements done right at your location. Call <a href='tel:8564842795' style='color:var(--orange)'>(856) 484-2795</a> for fast service anywhere in Millville, NJ.",
-  emergency: "🚨 For emergencies call us <strong>right now</strong>: <a href='tel:8564842795' style='color:var(--orange);font-size:1.1em'>(856) 484-2795</a>. We respond fast across Millville and South Jersey.",
-  price:     "We give <strong>upfront quotes</strong> with no hidden fees. Call <a href='tel:8564842795' style='color:var(--orange)'>(856) 484-2795</a> for a fast estimate — no obligation!",
-  recall:    "We help with recall-related repairs! Check your VIN at <a href='https://repairpal.com/recalls' target='_blank' style='color:var(--orange)'>RepairPal Recalls</a>, then <a href='#booking' style='color:var(--orange)'>book with us</a>.",
-  hours:     "We're available <strong>7 days a week</strong> with emergency callouts around the clock. Call <a href='tel:8564842795' style='color:var(--orange)'>(856) 484-2795</a> any time.",
-  location:  "We're based in <strong>Millville, NJ 08332</strong> and serve all of South Jersey including Vineland, Bridgeton, and Cumberland County. We come to <em>you</em>!",
-  default:   "Thanks for reaching out! For the fastest help, call us at <a href='tel:8564842795' style='color:var(--orange)'>(856) 484-2795</a> or <a href='#booking' style='color:var(--orange)'>book online</a>. We serve Millville, NJ and all of South Jersey."
+var VEHICLES = {
+  Car: {
+    "Acura":         ["ILX","MDX","RDX","RLX","TLX","NSX","Integra"],
+    "Audi":          ["A3","A4","A5","A6","A7","A8","Q3","Q5","Q7","Q8","TT","R8","e-tron"],
+    "BMW":           ["2 Series","3 Series","4 Series","5 Series","7 Series","8 Series","X1","X3","X5","X7","M3","M5","Z4","i4","iX"],
+    "Buick":         ["Enclave","Encore","Encore GX","Envision","LaCrosse"],
+    "Cadillac":      ["CT4","CT5","Escalade","XT4","XT5","XT6","LYRIQ"],
+    "Chevrolet":     ["Blazer","Camaro","Colorado","Corvette","Equinox","Malibu","Silverado 1500","Silverado 2500","Spark","Tahoe","Trailblazer","Traverse","Trax"],
+    "Chrysler":      ["300","Pacifica","Voyager"],
+    "Dodge":         ["Challenger","Charger","Durango","Grand Caravan","Hornet"],
+    "Ford":          ["Bronco","Bronco Sport","Edge","Escape","Expedition","Explorer","F-150","F-250","F-350","Fusion","Maverick","Mustang","Mustang Mach-E","Ranger","Taurus"],
+    "Genesis":       ["G70","G80","G90","GV70","GV80"],
+    "GMC":           ["Acadia","Canyon","Sierra 1500","Sierra 2500","Terrain","Yukon"],
+    "Honda":         ["Accord","Civic","CR-V","Fit","HR-V","Insight","Odyssey","Passport","Pilot","Ridgeline"],
+    "Hyundai":       ["Accent","Elantra","IONIQ 5","IONIQ 6","Kona","Palisade","Santa Cruz","Santa Fe","Sonata","Tucson","Venue"],
+    "Infiniti":      ["Q50","Q60","QX50","QX55","QX60","QX80"],
+    "Jeep":          ["Cherokee","Compass","Gladiator","Grand Cherokee","Grand Wagoneer","Renegade","Wrangler"],
+    "Kia":           ["Carnival","EV6","Forte","K5","Niro","Rio","Seltos","Soul","Sorento","Sportage","Stinger","Telluride"],
+    "Land Rover":    ["Defender","Discovery","Discovery Sport","Range Rover","Range Rover Evoque","Range Rover Sport"],
+    "Lexus":         ["ES","GS","GX","IS","LC","LS","LX","NX","RX","UX"],
+    "Lincoln":       ["Aviator","Corsair","MKZ","Nautilus","Navigator"],
+    "Mazda":         ["CX-3","CX-5","CX-50","CX-9","CX-90","Mazda3","Mazda6","MX-5 Miata"],
+    "Mercedes-Benz": ["A-Class","C-Class","CLA","CLS","E-Class","GLA","GLB","GLC","GLE","GLS","S-Class","SL","Sprinter","G-Class"],
+    "Mini":          ["Clubman","Convertible","Countryman","Hardtop"],
+    "Mitsubishi":    ["Eclipse Cross","Mirage","Outlander","Outlander Sport"],
+    "Nissan":        ["Altima","Armada","Frontier","GT-R","Kicks","Leaf","Maxima","Murano","Pathfinder","Rogue","Sentra","Titan","Versa"],
+    "Porsche":       ["718 Boxster","718 Cayman","911","Cayenne","Macan","Panamera","Taycan"],
+    "RAM":           ["1500","2500","3500","ProMaster"],
+    "Subaru":        ["Ascent","BRZ","Crosstrek","Forester","Impreza","Legacy","Outback","WRX"],
+    "Tesla":         ["Model 3","Model S","Model X","Model Y","Cybertruck"],
+    "Toyota":        ["4Runner","Avalon","Camry","Corolla","Crown","GR Supra","Highlander","Land Cruiser","Prius","RAV4","Sequoia","Sienna","Tacoma","Tundra","Venza"],
+    "Volkswagen":    ["Atlas","Golf","ID.4","Jetta","Passat","Taos","Tiguan"],
+    "Volvo":         ["C40","S60","S90","V60","V90","XC40","XC60","XC90"]
+  },
+  Truck: {
+    "Ford":             ["F-150","F-250 Super Duty","F-350 Super Duty","F-450 Super Duty","Maverick","Ranger","F-150 Lightning"],
+    "Chevrolet":        ["Colorado","Silverado 1500","Silverado 2500HD","Silverado 3500HD"],
+    "GMC":              ["Canyon","Sierra 1500","Sierra 2500HD","Sierra 3500HD"],
+    "RAM":              ["1500","2500","3500","4500","5500","ProMaster"],
+    "Toyota":           ["Tacoma","Tundra"],
+    "Nissan":           ["Frontier","Titan","Titan XD"],
+    "Honda":            ["Ridgeline"],
+    "Jeep":             ["Gladiator"],
+    "Dodge":            ["Dakota"],
+    "Rivian":           ["R1T"],
+    "Other Heavy Duty": ["Freightliner","Kenworth","Peterbilt","Mack","International","Volvo Truck","Western Star"]
+  }
 };
 
-/* ── CHAT TOGGLE ── */
-function toggleChat() {
-  chatOpen = !chatOpen;
-  const win  = document.getElementById('chatWindow');
-  const icon = document.getElementById('chatIcon');
-  const badge = document.querySelector('.chat-badge');
+var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwapEHEpEldMDtpz9w3TsOUDY7Ebsj2bCXbo9v3H2sYFLhOTXCFzVUJa9Q3JTRDkNCm7w/exec';
+var currentType = 'Car';
 
-  win.classList.toggle('open', chatOpen);
+function g(id){ return document.getElementById(id); }
 
-  if (chatOpen) {
-    if (badge) badge.style.display = 'none';
-    icon.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
-  } else {
-    icon.innerHTML = '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>';
-  }
+function populateBrands(type){
+  var s = g('fBrand'); if(!s) return;
+  s.innerHTML = '<option value="">-- Select Brand --</option>';
+  Object.keys(VEHICLES[type]||{}).sort().forEach(function(b){
+    var o=document.createElement('option'); o.value=o.textContent=b; s.appendChild(o);
+  });
+  var m=g('fModel'); if(m) m.innerHTML='<option value="">-- Select Brand First --</option>';
 }
 
-/* ── QUICK REPLY BUTTONS ── */
-function sendQuick(text) {
-  addMsg(text, 'user');
-  document.getElementById('quickBtns').style.display = 'none';
-  setTimeout(() => addMsg(getReply(text), 'bot'), 600);
-}
-
-/* ── SEND TYPED MESSAGE ── */
-function sendChat() {
-  const input = document.getElementById('chatInput');
-  const text  = input.value.trim();
-  if (!text) return;
-  addMsg(text, 'user');
-  input.value = '';
-  document.getElementById('quickBtns').style.display = 'none';
-  setTimeout(() => addMsg(getReply(text), 'bot'), 800);
-}
-
-/* ── KEYWORD MATCHER ── */
-function getReply(text) {
-  const t = text.toLowerCase();
-  if (t.includes('book') || t.includes('schedule') || t.includes('appoint'))  return CHAT_REPLIES.book;
-  if (t.includes('brake') || t.includes('brakes') || t.includes('pad'))       return CHAT_REPLIES.brake;
-  if (t.includes('oil') || t.includes('leak') || t.includes('gasket'))        return CHAT_REPLIES.oil;
-  if (t.includes('tire') || t.includes('tyre') || t.includes('flat'))         return CHAT_REPLIES.tire;
-  if (t.includes('emergency') || t.includes('stuck') || t.includes('strand')) return CHAT_REPLIES.emergency;
-  if (t.includes('price') || t.includes('cost') || t.includes('how much'))    return CHAT_REPLIES.price;
-  if (t.includes('recall'))                                                    return CHAT_REPLIES.recall;
-  if (t.includes('hour') || t.includes('open') || t.includes('available'))    return CHAT_REPLIES.hours;
-  if (t.includes('where') || t.includes('location') || t.includes('area'))    return CHAT_REPLIES.location;
-  return CHAT_REPLIES.default;
-}
-
-/* ── APPEND MESSAGE TO CHAT ── */
-function addMsg(html, type) {
-  const box = document.getElementById('chatMessages');
-  const div = document.createElement('div');
-  div.className = `msg ${type}`;
-  div.innerHTML = html + `<div class="msg-time">Just now</div>`;
-  box.appendChild(div);
-  box.scrollTop = box.scrollHeight;
-}
-
-/* ── ENTER KEY IN CHAT INPUT ── */
-function chatInputKeypress(e) {
-  if (e.key === 'Enter') sendChat();
-}
-
-/* ── MOBILE NAV TOGGLE ── */
-function toggleMenu() {
-  document.querySelector('.nav-links').classList.toggle('open');
-}
-
-/* ── SCROLL REVEAL ── */
-function initReveal() {
-  // Use threshold 0 so elements visible on load trigger immediately
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
-  }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-
-  // Also reveal anything already in view on page load
-  setTimeout(() => {
-    document.querySelectorAll('.reveal').forEach(el => {
-      const rect = el.getBoundingClientRect();
-      if (rect.top < window.innerHeight) el.classList.add('vis');
-    });
-  }, 100);
-}
-
-/* ── SHOPMONKEY LOADER ── */
-function initShopMonkey() {
-  // After 3 seconds, if the ShopMonkey iframe hasn't loaded, show fallback form.
-  // TO ACTIVATE REAL SHOPMONKEY:
-  //   1. Go to your ShopMonkey dashboard
-  //   2. Navigate to Marketing → Appt Scheduler → Copy Code
-  //   3. Paste the generated <iframe> src URL into the variable below
-  //   4. The loader will be hidden and the iframe shown automatically
-  const SHOPMONKEY_URL = ''; // <-- paste your ShopMonkey booking URL here
-
-  const frame   = document.getElementById('smFrame');
-  const loader  = document.getElementById('smLoader');
-  const fallback = document.getElementById('smFallback');
-
-  if (SHOPMONKEY_URL) {
-    const iframe = document.createElement('iframe');
-    iframe.src = SHOPMONKEY_URL;
-    iframe.style.cssText = 'width:100%;height:520px;border:none;display:block;';
-    iframe.onload = () => { if (loader) loader.style.display = 'none'; };
-    frame.appendChild(iframe);
-  } else {
-    // No URL configured — show fallback form after short delay
-    setTimeout(() => {
-      if (loader)   loader.style.display   = 'none';
-      if (fallback) fallback.style.display = 'block';
-    }, 2500);
-  }
-}
-
-/* ── BOOKING FORM SUBMIT ── */
-function initBookingForm() {
-  const form = document.getElementById('bookForm');
-  if (!form) return;
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    form.innerHTML = `
-      <div style="text-align:center;padding:24px;color:var(--orange);font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;line-height:1.7;">
-        ✓ Request received!<br>We'll call you shortly at the number provided.<br><br>
-        <a href="tel:8564842795" style="color:white;font-size:1.4rem;font-family:'Bebas Neue',sans-serif;letter-spacing:.05em;">(856) 484-2795</a>
-      </div>`;
+function populateModels(type,brand){
+  var s=g('fModel'); if(!s) return;
+  s.innerHTML='<option value="">-- Select Model --</option>';
+  ((VEHICLES[type]||{})[brand]||[]).forEach(function(m){
+    var o=document.createElement('option'); o.value=o.textContent=m; s.appendChild(o);
   });
 }
 
-/* ── SMOOTH SCROLL FOR NAV LINKS ── */
-function initSmoothScroll() {
-  document.querySelectorAll('a[href^="#"]').forEach(link => {
-    link.addEventListener('click', e => {
-      const target = document.querySelector(link.getAttribute('href'));
-      if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth' });
-        // close mobile menu if open
-        document.querySelector('.nav-links')?.classList.remove('open');
+function setType(type){
+  currentType=type;
+  g('fVehicleType').value=type;
+  g('vBtnCar').classList.toggle('active', type==='Car');
+  g('vBtnTruck').classList.toggle('active', type==='Truck');
+  populateBrands(type);
+}
+
+var chatOpen=false;
+var REPLIES={
+  book:      "Head to our <a href='#booking' style='color:var(--orange)'>Book Online section</a> or call <a href='tel:8562095990' style='color:var(--orange)'>(856) 209-5990</a>.",
+  brake:     "We replace brake pads on-site! Call <a href='tel:8562095990' style='color:var(--orange)'>(856) 209-5990</a> or <a href='#booking' style='color:var(--orange)'>book online</a>.",
+  oil:       "We handle oil leaks on-site. <a href='#booking' style='color:var(--orange)'>Book a diagnosis</a> or call <a href='tel:8562095990' style='color:var(--orange)'>(856) 209-5990</a>.",
+  tire:      "Flat tires and replacements at your location! Call <a href='tel:8562095990' style='color:var(--orange)'>(856) 209-5990</a>.",
+  emergency: "CALL NOW: <a href='tel:8562095990' style='color:var(--orange);font-size:1.1em;font-weight:700'>(856) 209-5990</a> — fast response across Millville and South Jersey.",
+  price:     "Upfront quotes, no hidden fees. Call <a href='tel:8562095990' style='color:var(--orange)'>(856) 209-5990</a> for a fast estimate!",
+  default:   "For fastest help call <a href='tel:8562095990' style='color:var(--orange)'>(856) 209-5990</a> or <a href='#booking' style='color:var(--orange)'>book online</a>."
+};
+
+function getReply(t){
+  t=t.toLowerCase();
+  if(t.includes('book')||t.includes('schedule')||t.includes('appoint')) return REPLIES.book;
+  if(t.includes('brake')||t.includes('pad'))                            return REPLIES.brake;
+  if(t.includes('oil')||t.includes('leak')||t.includes('gasket'))       return REPLIES.oil;
+  if(t.includes('tire')||t.includes('tyre')||t.includes('flat'))        return REPLIES.tire;
+  if(t.includes('emergency')||t.includes('stuck')||t.includes('strand'))return REPLIES.emergency;
+  if(t.includes('price')||t.includes('cost')||t.includes('how much'))   return REPLIES.price;
+  return REPLIES.default;
+}
+
+function addMsg(html,type){
+  var b=g('chatMsgs'); if(!b) return;
+  var d=document.createElement('div');
+  d.className='msg '+type;
+  d.innerHTML=html+'<div class="msg-time">Just now</div>';
+  b.appendChild(d); b.scrollTop=b.scrollHeight;
+}
+
+function toggleChat(){
+  chatOpen=!chatOpen;
+  var w=g('chatWin'),ic=g('chatIcon'),bk=document.querySelector('.chat-badge');
+  if(!w||!ic) return;
+  w.classList.toggle('open',chatOpen);
+  if(chatOpen){
+    if(bk) bk.style.display='none';
+    ic.innerHTML='<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+  } else {
+    ic.innerHTML='<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>';
+  }
+}
+
+function sendChat(){
+  var inp=g('chatInput'); if(!inp) return;
+  var t=inp.value.trim(); if(!t) return;
+  addMsg(t,'user'); inp.value='';
+  var qb=g('quickBtns'); if(qb) qb.style.display='none';
+  setTimeout(function(){ addMsg(getReply(t),'bot'); },800);
+}
+
+function markErr(id){
+  var e=g(id); if(!e) return;
+  e.classList.add('err');
+  setTimeout(function(){ e.classList.remove('err'); },2500);
+  e.focus();
+}
+
+function validate(){
+  var checks=[
+    {id:'fName',   msg:'Please enter your full name.'},
+    {id:'fEmail',  msg:'Please enter your email address.'},
+    {id:'fPhone',  msg:'Please enter your phone number.'},
+    {id:'fBrand',  msg:'Please select a vehicle brand.'},
+    {id:'fYear',   msg:'Please select the vehicle year.'},
+    {id:'fModel',  msg:'Please select a vehicle model.'},
+    {id:'fService',msg:'Please select a service.'},
+    {id:'fStreet', msg:'Please enter your street address.'},
+    {id:'fCity',   msg:'Please enter your city.'},
+    {id:'fZip',    msg:'Please enter your ZIP code.'}
+  ];
+  for(var i=0;i<checks.length;i++){
+    var el=g(checks[i].id);
+    if(!el||!el.value.trim()){ markErr(checks[i].id); alert(checks[i].msg); return false; }
+  }
+  if(g('fService').value==='Other'){
+    var ot=g('fOther');
+    if(!ot||!ot.value.trim()){ markErr('fOther'); alert('Please describe your problem.'); return false; }
+  }
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(g('fEmail').value)){
+    markErr('fEmail'); alert('Please enter a valid email address.'); return false;
+  }
+  return true;
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+
+  /* Nav shadow */
+  var nav=document.querySelector('nav');
+  window.addEventListener('scroll',function(){
+    if(nav) nav.style.boxShadow=window.scrollY>40?'0 4px 32px rgba(0,0,0,.5)':'none';
+  },{passive:true});
+
+  /* Hamburger */
+  var hb=g('hamburgerBtn');
+  if(hb) hb.addEventListener('click',function(){ document.querySelector('.nav-links').classList.toggle('open'); });
+
+  /* Smooth scroll */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click',function(e){
+      var t=document.querySelector(a.getAttribute('href'));
+      if(t){ e.preventDefault(); t.scrollIntoView({behavior:'smooth'}); document.querySelector('.nav-links').classList.remove('open'); }
+    });
+  });
+
+  /* Scroll reveal */
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('vis'); });
+  },{threshold:0,rootMargin:'0px 0px -30px 0px'});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  setTimeout(function(){
+    document.querySelectorAll('.reveal').forEach(function(el){
+      if(el.getBoundingClientRect().top<window.innerHeight) el.classList.add('vis');
+    });
+  },100);
+
+  /* Chat events */
+  var cb=g('chatBtn'), cx=g('chatCloseBtn'), cs=g('chatSendBtn'), ci=g('chatInput');
+  if(cb) cb.addEventListener('click',toggleChat);
+  if(cx) cx.addEventListener('click',toggleChat);
+  if(cs) cs.addEventListener('click',sendChat);
+  if(ci) ci.addEventListener('keypress',function(e){ if(e.key==='Enter') sendChat(); });
+  document.querySelectorAll('.qbtn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var msg=this.getAttribute('data-msg'); if(!msg) return;
+      addMsg(msg,'user');
+      var qb=g('quickBtns'); if(qb) qb.style.display='none';
+      setTimeout(function(){ addMsg(getReply(msg),'bot'); },600);
+    });
+  });
+
+  /* EmailJS */
+  if(typeof emailjs!=='undefined') emailjs.init({publicKey:'0b-42YoW_Gw1QsBI8'});
+
+  /* ── BOOKING FORM ── */
+  var bookForm=g('bookForm');
+  if(!bookForm) return;
+
+  /* Year */
+  var ys=g('fYear');
+  if(ys){
+    var cur=new Date().getFullYear();
+    for(var y=cur+1;y>=1990;y--){
+      var o=document.createElement('option'); o.value=o.textContent=y; ys.appendChild(o);
+    }
+  }
+
+  /* Min date */
+  var di=g('fDate'); if(di) di.min=new Date().toISOString().split('T')[0];
+
+  /* Vehicle buttons */
+  var vC=g('vBtnCar'), vT=g('vBtnTruck');
+  if(vC) vC.addEventListener('click',function(){ setType('Car'); });
+  if(vT) vT.addEventListener('click',function(){ setType('Truck'); });
+  populateBrands('Car');
+
+  /* Brand → Model */
+  var bs=g('fBrand');
+  if(bs) bs.addEventListener('change',function(){ populateModels(currentType,this.value); });
+
+  /* Other box */
+  var ss=g('fService'), ob=g('otherBox');
+  if(ss) ss.addEventListener('change',function(){
+    if(ob) ob.style.display=this.value==='Other'?'block':'none';
+  });
+
+  /* Live location */
+  var lb=g('liveLocBtn'), lst=g('locStatus');
+  if(lb){
+    lb.addEventListener('click',function(){
+      if(!navigator.geolocation){
+        lst.textContent='Geolocation not supported.'; lst.className='loc-status fail'; return;
       }
+      lst.textContent='Getting your location...'; lst.className='loc-status loading'; lb.disabled=true;
+      navigator.geolocation.getCurrentPosition(
+        function(pos){
+          fetch('https://nominatim.openstreetmap.org/reverse?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude+'&format=json')
+            .then(function(r){ return r.json(); })
+            .then(function(d){
+              var a=d.address||{};
+              var st=g('fStreet'),ci=g('fCity'),sta=g('fState'),zi=g('fZip');
+              if(st)  st.value=((a.house_number||'')+' '+(a.road||a.pedestrian||'')).trim();
+              if(ci)  ci.value=a.city||a.town||a.village||'';
+              if(sta) sta.value=a.state||'NJ';
+              if(zi)  zi.value=a.postcode||'';
+              lst.textContent='Location detected! Please verify.'; lst.className='loc-status ok'; lb.disabled=false;
+            })
+            .catch(function(){
+              var st=g('fStreet');
+              if(st) st.value=pos.coords.latitude.toFixed(5)+', '+pos.coords.longitude.toFixed(5);
+              lst.textContent='Coordinates captured.'; lst.className='loc-status ok'; lb.disabled=false;
+            });
+        },
+        function(err){
+          var m={1:'Location denied. Type your address.',2:'Location unavailable.',3:'Location timed out.'};
+          lst.textContent=m[err.code]||'Could not get location.'; lst.className='loc-status fail'; lb.disabled=false;
+        },
+        {timeout:12000,enableHighAccuracy:true}
+      );
     });
+  }
+
+  /* Popup close */
+  var cp=g('closePopup');
+  if(cp) cp.addEventListener('click',function(){
+    g('successOverlay').classList.remove('show');
+    bookForm.reset(); populateBrands('Car'); setType('Car');
+    if(ob) ob.style.display='none';
   });
-}
 
-/* ── NAV SCROLL SHADOW ── */
-function initNavScroll() {
-  const nav = document.querySelector('nav');
-  window.addEventListener('scroll', () => {
-    nav.style.boxShadow = window.scrollY > 40
-      ? '0 4px 32px rgba(0,0,0,.5)'
-      : 'none';
-  }, { passive: true });
-}
+  /* Submit */
+  bookForm.addEventListener('submit',function(e){
+    e.preventDefault();
+    if(!validate()) return;
 
-/* ── INIT ALL ── */
-document.addEventListener('DOMContentLoaded', () => {
-  // Mark body as JS-loaded so CSS animations activate
-  document.body.classList.add('js-loaded');
-  initReveal();
-  initShopMonkey();
-  initBookingForm();
-  initSmoothScroll();
-  initNavScroll();
+    var svc=g('fService').value;
+    var oth=g('fOther')?g('fOther').value:'';
+    var svcD=svc==='Other'?'Other: '+oth:svc;
+    var name=g('fName').value.trim(), email=g('fEmail').value.trim(), phone=g('fPhone').value.trim();
+    var brand=g('fBrand').value, model=g('fModel').value, year=g('fYear').value;
+    var street=g('fStreet').value.trim(), city=g('fCity').value.trim();
+    var state=g('fState').value, zip=g('fZip').value.trim();
+    var date=g('fDate').value||'Flexible', time=g('fTime').value||'Any time';
+    var addr=street+', '+city+', '+state+' '+zip;
+    var vt=g('fVehicleType').value;
+    var ts=new Date().toLocaleString('en-US',{timeZone:'America/New_York'});
+
+    var sb=g('submitBtn'), st=g('submitText');
+    sb.disabled=true; st.textContent='Sending...';
+
+    var ep={
+      to_email:email, from_name:name, from_email:email, phone:phone,
+      vehicle_type:vt, brand:brand, model:model, year:year,
+      service:svcD, location:addr, date:date, time:time,
+      reply_to:'admin@onrouteservice.com'
+    };
+    var sd={
+      timestamp:ts, name:name, email:email, phone:phone,
+      vehicle:vt+' - '+brand+' '+model+' '+year,
+      service:svcD, location:addr, date:date, time:time, status:'New'
+    };
+
+    function done(){
+      sb.disabled=false; st.textContent='Send Booking Request';
+      var ov=g('successOverlay');
+      if(g('popName'))  g('popName').textContent=name;
+      if(g('popEmail')) g('popEmail').textContent=email;
+      if(g('popPhone')) g('popPhone').textContent=phone;
+      if(ov) ov.classList.add('show');
+    }
+
+    function saveSheet(){
+      return fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(sd)});
+    }
+
+    if(typeof emailjs!=='undefined'){
+      emailjs.send('service_53qpycb','template_xaz3et2',ep)
+        .then(saveSheet).then(done)
+        .catch(function(){ saveSheet().finally(done); });
+    } else {
+      saveSheet().finally(done);
+    }
+  });
+
 });
