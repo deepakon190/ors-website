@@ -38,17 +38,26 @@ var VEHICLES = {
     "Volvo":         ["C40","S60","S90","V60","V90","XC40","XC60","XC90"]
   },
   Truck: {
-    "Ford":             ["F-150","F-250 Super Duty","F-350 Super Duty","F-450 Super Duty","Maverick","Ranger","F-150 Lightning"],
-    "Chevrolet":        ["Colorado","Silverado 1500","Silverado 2500HD","Silverado 3500HD"],
-    "GMC":              ["Canyon","Sierra 1500","Sierra 2500HD","Sierra 3500HD"],
-    "RAM":              ["1500","2500","3500","4500","5500","ProMaster"],
-    "Toyota":           ["Tacoma","Tundra"],
-    "Nissan":           ["Frontier","Titan","Titan XD"],
-    "Honda":            ["Ridgeline"],
-    "Jeep":             ["Gladiator"],
-    "Dodge":            ["Dakota"],
-    "Rivian":           ["R1T"],
-    "Other Heavy Duty": ["Freightliner","Kenworth","Peterbilt","Mack","International","Volvo Truck","Western Star"]
+    "Ford":              ["F-150","F-250 Super Duty","F-350 Super Duty","F-450 Super Duty","F-550 Super Duty","Maverick","Ranger","F-150 Lightning"],
+    "Chevrolet":         ["Colorado","Silverado 1500","Silverado 2500HD","Silverado 3500HD","Silverado 4500HD","Silverado 5500HD"],
+    "GMC":               ["Canyon","Sierra 1500","Sierra 2500HD","Sierra 3500HD"],
+    "RAM":               ["1500","2500","3500","4500","5500","ProMaster","ProMaster City"],
+    "Toyota":            ["Tacoma","Tundra"],
+    "Nissan":            ["Frontier","Titan","Titan XD"],
+    "Honda":             ["Ridgeline"],
+    "Jeep":              ["Gladiator"],
+    "Dodge":             ["Dakota"],
+    "Rivian":            ["R1T"],
+    "Freightliner":      ["Cascadia","M2 106","M2 112","114SD","122SD","eCascadia","eM2"],
+    "Peterbilt":         ["579","589","567","548","537","520","579EV","520EV"],
+    "Kenworth":          ["T680","T880","W900","W990","T480","T380","T280","T680E"],
+    "Volvo Trucks":      ["VNL 300","VNL 400","VNL 740","VNL 860","VNR","VNX","VNR Electric"],
+    "Mack":              ["Anthem","Pinnacle","Granite","LR","TerraPro","MD Electric"],
+    "International":     ["LT Series","RH Series","HX Series","MV Series","HV Series","eMV Series"],
+    "Western Star":      ["47X","49X","57X"],
+    "Isuzu Commercial":  ["NPR","NQR","NRR","FTR","FVR","NRR EV"],
+    "Hino":              ["L6","L7","L8","XL7","XL8"],
+    "Other Heavy Duty":  ["Other Class 7","Other Class 8","Other Commercial"]
   }
 };
 
@@ -141,17 +150,12 @@ function markErr(id){
 }
 
 function validate(){
+  /* Only Name, Email, Phone, Street are mandatory */
   var checks=[
-    {id:'fName',   msg:'Please enter your full name.'},
-    {id:'fEmail',  msg:'Please enter your email address.'},
-    {id:'fPhone',  msg:'Please enter your phone number.'},
-    {id:'fBrand',  msg:'Please select a vehicle brand.'},
-    {id:'fYear',   msg:'Please select the vehicle year.'},
-    {id:'fModel',  msg:'Please select a vehicle model.'},
-    {id:'fService',msg:'Please select a service.'},
-    {id:'fStreet', msg:'Please enter your street address.'},
-    {id:'fCity',   msg:'Please enter your city.'},
-    {id:'fZip',    msg:'Please enter your ZIP code.'}
+    {id:'fName',  msg:'Please enter your full name.'},
+    {id:'fEmail', msg:'Please enter your email address.'},
+    {id:'fPhone', msg:'Please enter your phone number.'},
+    {id:'fStreet',msg:'Please enter your street address.'}
   ];
   for(var i=0;i<checks.length;i++){
     var el=g(checks[i].id);
@@ -229,6 +233,16 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }
 
+  /* VIN counter */
+  var vinInput=g('fVin');
+  if(vinInput){
+    vinInput.addEventListener('input',function(){
+      var cnt=g('vinCount');
+      if(cnt) cnt.textContent=this.value.length+'/17';
+      this.value=this.value.toUpperCase();
+    });
+  }
+
   /* Min date */
   var di=g('fDate'); if(di) di.min=new Date().toISOString().split('T')[0];
 
@@ -297,6 +311,7 @@ document.addEventListener('DOMContentLoaded', function(){
     e.preventDefault();
     if(!validate()) return;
 
+    var vin=g('fVin')?g('fVin').value.trim().toUpperCase():'';
     var svc=g('fService').value;
     var oth=g('fOther')?g('fOther').value:'';
     var svcD=svc==='Other'?'Other: '+oth:svc;
@@ -314,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     var ep={
       to_email:email, from_name:name, from_email:email, phone:phone,
-      vehicle_type:vt, brand:brand, model:model, year:year,
+      vin:vin, vehicle_type:vt, brand:brand, model:model, year:year,
       service:svcD, location:addr, date:date, time:time,
       reply_to:'admin@onrouteservice.com'
     };
