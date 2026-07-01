@@ -97,9 +97,9 @@ var REPLIES={
   brake:     "We replace brake pads on-site! Call <a href='tel:8562095990' style='color:var(--orange)'>(856) 209-5990</a> or <a href='#booking' style='color:var(--orange)'>book online</a>.",
   oil:       "We handle oil leaks on-site. <a href='#booking' style='color:var(--orange)'>Book a diagnosis</a> or call <a href='tel:8562095990' style='color:var(--orange)'>(856) 209-5990</a>.",
   tire:      "Flat tires and replacements at your location! Call <a href='tel:8562095990' style='color:var(--orange)'>(856) 209-5990</a>.",
-  emergency: "CALL NOW: <a href='tel:8562095990' style='color:var(--orange);font-size:1.1em;font-weight:700'>(856) 209-5990</a> — fast response across Millville and South Jersey.",
+  emergency: "CALL NOW: <a href='tel:8562095990' style='color:var(--orange);font-size:1.1em;font-weight:700'>(856) 209-5990</a> — fast response across NJ, Philadelphia, Wilmington, PA and MD.",
   price:     "Upfront quotes, no hidden fees. Call <a href='tel:8562095990' style='color:var(--orange)'>(856) 209-5990</a> for a fast estimate!",
-  default:   "For fastest help call <a href='tel:8562095990' style='color:var(--orange)'>(856) 209-5990</a> or <a href='#booking' style='color:var(--orange)'>book online</a>."
+  default:   "For fastest help call <a href='tel:8562095990' style='color:var(--orange)'>(856) 209-5990</a> or <a href='#booking' style='color:var(--orange)'>book online</a>. We serve NJ, Philadelphia, PA, Wilmington and MD!"
 };
 
 function getReply(t){
@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function(){
               var st=g('fStreet'),ci=g('fCity'),sta=g('fState'),zi=g('fZip');
               if(st)  st.value=((a.house_number||'')+' '+(a.road||a.pedestrian||'')).trim();
               if(ci)  ci.value=a.city||a.town||a.village||'';
-              if(sta) sta.value=a.state||'NJ';
+              if(sta) sta.value=a.state||'';
               if(zi)  zi.value=a.postcode||'';
               lst.textContent='Location detected! Please verify.'; lst.className='loc-status ok'; lb.disabled=false;
             })
